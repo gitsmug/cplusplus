@@ -1,8 +1,10 @@
 #https://github.com/mbcrawfo/GenericMakefile
 
 #### PROJECT SETTINGS ####
-# The name of the executable to be created
+# The name of the compiled executable to be created
 BIN_NAME := hello
+# Name of convenience symlink to compiled executable.
+SYMLINK_BIN_NAME := $(BIN_NAME).bin_symlink
 # Directory for resulting executables.
 BIN_DIR = bin
 # Compiler used
@@ -210,8 +212,8 @@ uninstall:
 # Removes all build files
 .PHONY: clean
 clean:
-	@echo "Deleting $(BIN_NAME) symlink"
-	@$(RM) $(BIN_NAME)
+	@echo "Deleting $(SYMLINK_BIN_NAME) symlink"
+	@$(RM) $(SYMLINK_BIN_NAME)
 	@echo "Deleting output directories"
 	@$(RM) -r $(BIN_DIR)
 	@$(RM) -r $(OBJ_DIR)
@@ -219,8 +221,8 @@ clean:
 # Main rule, checks the executable and symlinks to the output
 all: $(BIN_PATH)/$(BIN_NAME)
 	@echo "Making symlink: $(BIN_NAME) -> $<"
-	@$(RM) $(BIN_NAME)
-	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
+	@$(RM) $(SYMLINK_BIN_NAME)
+	@ln -s $(BIN_PATH)/$(BIN_NAME) $(SYMLINK_BIN_NAME)
 
 # Link the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
