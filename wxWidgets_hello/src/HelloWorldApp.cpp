@@ -63,6 +63,7 @@ void MyFrame::OnAbout(wxCommandEvent& /* event */)
 {
     wxMessageBox("This is a wxWidgets Hello World example",
                  "About Hello World", wxOK | wxICON_INFORMATION);
+    wxMessageBox(L"Salut \u00E0 toi!");
 }
 void MyFrame::OnHello(wxCommandEvent& /* event */)
 {
