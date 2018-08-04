@@ -8,5 +8,6 @@ class Helpers : public wxFrame
 {
 public:
 	Helpers(const wxString& title);
-	void Demo();
+	void CmdLnDemo();
+	void OnQuit(wxCommandEvent & event);
 };

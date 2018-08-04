@@ -7,6 +7,7 @@
 #endif
 
 #include "../include/wxWidgets_tutorial/wxWidgets_helperClasses/helpers.h"
+#include "../include/wxWidgets_tutorial/Communication/controlWindow.h"
 
 using namespace std;
 
@@ -30,9 +31,14 @@ bool MainApp::OnInit()
 	wxPuts(wxT(""));
 	wxPuts(wxT(""));
 
+/*
 	Helpers *h = new Helpers(wxT("Helpers"));
 	h->Show(true);
-	h->Demo();
+	h->CmdLnDemo();
+*/
+
+	ControlWindow *controlWindow = new ControlWindow(wxT("wxWidgets Communication"));
+	controlWindow->Show(true);
 
 	return true;
 }

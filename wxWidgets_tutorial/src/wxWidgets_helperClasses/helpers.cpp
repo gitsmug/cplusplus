@@ -10,12 +10,30 @@
 
 
 Helpers::Helpers(const wxString& title)
-	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(250, 150))
+	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(270, 150))
 {
+	//SetIcon(wxIcon(wxT("web.xpm")));
+
+	wxPanel *panel = new wxPanel(this, wxID_ANY);
+
+	wxButton *button = new wxButton(panel, wxID_EXIT, wxT("Quit"), wxPoint(20, 20));
+
+	Connect(
+		wxID_EXIT,
+		wxEVT_COMMAND_BUTTON_CLICKED,
+		wxCommandEventHandler(Helpers::OnQuit));
+
+	button->SetFocus();
+
 	Center();
 }
 
-void Helpers::Demo()
+void Helpers::OnQuit(wxCommandEvent & WXUNUSED(event))
+{
+	Close(true);
+}
+
+void Helpers::CmdLnDemo()
 {
 	wxPuts(wxT("Helpers Demo method"));
 	wxPuts(wxT(""));
