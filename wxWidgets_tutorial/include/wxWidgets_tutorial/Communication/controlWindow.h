@@ -17,9 +17,19 @@ public:
 
 	DisplayPanel *displayPanel;
 
+	void OnQuit(wxCommandEvent & event);
+
 private:
 	wxPanel *parentPanel;
 	ControlPanel *controlPanel;
+
+	wxMenuBar *menubar;
+	wxMenu *file;
+	wxMenu *import;
+	wxMenuItem *quit;
+
+	wxToolBar *toolbar1;
+	wxToolBar *toolbar2;
 };
 
 #endif

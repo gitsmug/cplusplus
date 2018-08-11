@@ -16,7 +16,8 @@ enum PanelId : wxWindowID
 };
 
 ControlPanel::ControlPanel(wxPanel * parentPanel)
-	: wxPanel(parentPanel, -1, wxPoint(-1, 1), wxSize(-1, -1), wxBORDER_SUNKEN)
+	//: wxPanel(parentPanel, -1, wxPoint(-1, 1), wxSize(-1, -1), wxBORDER_SUNKEN)
+: wxPanel(parentPanel, -1, wxPoint(0, 150), wxSize(270, 150), wxBORDER_SUNKEN)
 	, count(0)
 {
 	this->parentPanel = parentPanel;

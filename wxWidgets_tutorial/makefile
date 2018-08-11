@@ -9,6 +9,7 @@ SYMLINK_BIN_NAME := $(BIN_NAME).bin_symlink
 BIN_DIR = bin
 # Compiler used
 CXX ?= g++
+#CXX ?= clang
 # Extension of source files used in the project
 SRC_EXT = cpp
 # Path to the source directory, relative to the makefile
