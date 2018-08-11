@@ -62,7 +62,6 @@ ControlWindow::ControlWindow(const wxString& title)
 	vbox->Add(toolbar2, 0, wxEXPAND);
 
 	vbox->Add(parentPanel, 1, wxEXPAND | wxALL, 5);
-	//vbox->Add(displayPanel, 1, wxEXPAND | wxALL, 5);
 
 	SetSizer(vbox);
 

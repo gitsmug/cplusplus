@@ -8,6 +8,9 @@
 
 #include "../include/wxWidgets_tutorial/wxWidgets_helperClasses/helpers.h"
 #include "../include/wxWidgets_tutorial/Communication/controlWindow.h"
+#include "../include/wxWidgets_tutorial/sizers/sizerDemo.h"
+#include "../include/wxWidgets_tutorial/sizers/borderDemo.h"
+#include "../include/wxWidgets_tutorial/sizers/alignDemo.h"
 
 using namespace std;
 
@@ -36,9 +39,20 @@ bool MainApp::OnInit()
 	h->Show(true);
 	h->CmdLnDemo();
 */
-
+/*
 	ControlWindow *controlWindow = new ControlWindow(wxT("wxWidgets Communication"));
 	controlWindow->Show(true);
+*/
+/*
+	SizerDemo *sd = new SizerDemo(wxT("wxWidgets sizer demo"));
+	sd->Show(true);
+*/
+	BorderDemo *bd = new BorderDemo("Border");
+	bd->Show(true);
+/*
+	AlignDemo *ad = new AlignDemo(wxT("wxWidgets alignment demo"));
+	ad->Show(true);
+*/
 
 	return true;
 }
