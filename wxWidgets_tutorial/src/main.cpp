@@ -11,6 +11,7 @@
 #include "../include/wxWidgets_tutorial/sizers/sizerDemo.h"
 #include "../include/wxWidgets_tutorial/sizers/borderDemo.h"
 #include "../include/wxWidgets_tutorial/sizers/alignDemo.h"
+#include "../include/wxWidgets_tutorial/events/windowMove.h"
 
 using namespace std;
 
@@ -47,12 +48,17 @@ bool MainApp::OnInit()
 	SizerDemo *sd = new SizerDemo(wxT("wxWidgets sizer demo"));
 	sd->Show(true);
 */
+/*
 	BorderDemo *bd = new BorderDemo("Border");
 	bd->Show(true);
+*/
 /*
 	AlignDemo *ad = new AlignDemo(wxT("wxWidgets alignment demo"));
 	ad->Show(true);
 */
+
+	WindowMove *wm = new WindowMove(wxT("wxWidgets window move event"));
+	wm->Show();
 
 	return true;
 }
