@@ -12,6 +12,7 @@
 #include "../include/wxWidgets_tutorial/sizers/borderDemo.h"
 #include "../include/wxWidgets_tutorial/sizers/alignDemo.h"
 #include "../include/wxWidgets_tutorial/events/windowMove.h"
+#include "../include/wxWidgets_tutorial/dialogs/messageDialogs.h"
 
 using namespace std;
 
@@ -56,9 +57,13 @@ bool MainApp::OnInit()
 	AlignDemo *ad = new AlignDemo(wxT("wxWidgets alignment demo"));
 	ad->Show(true);
 */
-
+/*
 	WindowMove *wm = new WindowMove(wxT("wxWidgets window move event"));
 	wm->Show();
+*/
+
+	MessageDialogs *md = new MessageDialogs(wxT("wxWidgets message dialogs"));
+	md->Show();
 
 	return true;
 }
