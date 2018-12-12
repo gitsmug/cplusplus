@@ -4,8 +4,6 @@
     #include <wx/wx.h>
 #endif
 
-//#include "wx/glcanvas.h"
-
 // include OpenGL
 #ifdef __WXMAC__
 #include <OpenGL/glew.h>
@@ -61,17 +59,31 @@ void HelloCanvas::InitializeGL()
 
 	GLfloat verts[] =
 	{
-		+0.0f, +1.0f,
+		+0.0f, +0.0f,
+		+1.0f, +1.0f,
+		-1.0f, +1.0f,
+
+		// +0.0f, +0.0f, Shared vertice of two triangles that touch at point.
 		-1.0f, -1.0f,
 		+1.0f, -1.0f,
+
+		// Triangle indices:  0,1,3  0,3,4
 	};
 
-	GLuint myBufferID;
-	glGenBuffers(1, &myBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
+	GLuint vertexBufferID;
+	glGenBuffers(1, &vertexBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Triangle indices from verts[]
+	GLushort indices[] = { 0,1,2,  0,3,4 };
+	//GLushort indices[] = { 3,1,2,  0,3,4 };
+	GLuint indexBufferID;
+	glGenBuffers(1, &indexBufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
 	glInitialized = true;
@@ -89,7 +101,8 @@ void HelloCanvas::render( wxPaintEvent& /* evt */)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, GetSize().x, GetSize().y);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	const int indiceCount = 6;
+	glDrawElements(GL_TRIANGLES, indiceCount, GL_UNSIGNED_SHORT, 0);
 
 	glFlush();
 	SwapBuffers();
