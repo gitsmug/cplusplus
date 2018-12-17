@@ -21,6 +21,10 @@ using std::string;
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/transform.hpp>
+
 using glm::vec3;
 using glm::mat4;
 
@@ -58,6 +62,8 @@ HelloCanvas::HelloCanvas(wxFrame * parent, int * args)
 HelloCanvas::~HelloCanvas()
 {
 	delete m_context;
+	glUseProgram(0);
+	glDeleteProgram(programId);
 }
 
 void HelloCanvas::resized(wxSizeEvent& /* evt */)
@@ -74,9 +80,9 @@ void HelloCanvas::SendDataToOpenGL()
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(glGetAttribLocation(programId, "position"));
 	glVertexAttribPointer(
-		0,
+		glGetAttribLocation(programId, "position"),
 		3,
 		GL_FLOAT,
 		GL_FALSE,
@@ -85,9 +91,9 @@ void HelloCanvas::SendDataToOpenGL()
 		//sizeof(float) * 6,
 
 		0); // start at beginning of verts array
-	glEnableVertexAttribArray(1 /* verts index where RGB stuff starts */);
+	glEnableVertexAttribArray(glGetAttribLocation(programId, "vertexColor"));
 	glVertexAttribPointer(
-		1, /* verts index where RGB stuff starts */
+		glGetAttribLocation(programId, "vertexColor"),
 		3, /* length of RGB sections of verts */
 		GL_FLOAT,
 		GL_FALSE,
@@ -105,6 +111,64 @@ void HelloCanvas::SendDataToOpenGL()
 	numIndices = shape.numIndices;
 
 	shape.CleanUp();
+
+	GLuint transformMatrixBufferId;
+	glGenBuffers(1, &transformMatrixBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, transformMatrixBufferId);
+
+
+	GLfloat aspectRatio = ((float)GetSize().x) / ((float)GetSize().y);
+
+	mat4 projectionMatrix = glm::perspective(
+		glm::radians(60.0f), // feild of view angle
+		aspectRatio,
+		0.1f, // near-plane
+		10.0f); // far-plane
+
+	mat4 fullTransforms[]
+	{
+		/* Cube 1
+		 */
+		projectionMatrix
+			* glm::translate(vec3(-1.0f, 0.0f, -3.0f))
+			* glm::rotate(
+				glm::radians(36.0f),
+				vec3(1.0f, 0.0f, 0.0f)),
+
+		/* Cube 2
+		 */
+		projectionMatrix
+			* glm::translate(vec3(1.0f, 0.0f, -3.75f))
+			* glm::rotate(
+				glm::radians(126.0f),
+				vec3(0.0f, 1.0f, 0.0f)),
+	};
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullTransforms), fullTransforms, GL_STATIC_DRAW);
+
+	GLuint transFormsAttribLocaion = glGetAttribLocation(programId, "fullTrasnformMatrix");
+
+	glVertexAttribPointer(
+		transFormsAttribLocaion,
+		4, // mat4 fullTransforms
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(mat4), // stride accross fullTransforms
+		(void*)(sizeof(float) * 0));
+
+	glVertexAttribPointer(transFormsAttribLocaion + 1, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(float) * 4));
+	glVertexAttribPointer(transFormsAttribLocaion + 2, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(float) * 8));
+	glVertexAttribPointer(transFormsAttribLocaion + 3, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(float) * 12));
+
+	glEnableVertexAttribArray(transFormsAttribLocaion + 0);
+	glEnableVertexAttribArray(transFormsAttribLocaion + 1);
+	glEnableVertexAttribArray(transFormsAttribLocaion + 2);
+	glEnableVertexAttribArray(transFormsAttribLocaion + 3);
+
+	glVertexAttribDivisor(transFormsAttribLocaion + 0, 1);
+	glVertexAttribDivisor(transFormsAttribLocaion + 1, 1);
+	glVertexAttribDivisor(transFormsAttribLocaion + 2, 1);
+	glVertexAttribDivisor(transFormsAttribLocaion + 3, 1);
 }
 
 void HelloCanvas::render( wxPaintEvent& /* evt */)
@@ -117,28 +181,9 @@ void HelloCanvas::render( wxPaintEvent& /* evt */)
 
 	// GL_COLOR_BUFFER_BIT is wasteful if entire view is painted over (video game scenes, etc.)
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	GLfloat aspectRatio = ((float)GetSize().x) / ((float)GetSize().y);
 	glViewport(0, 0, GetSize().x, GetSize().y);
-	
-	mat4 projectionMatrix = glm::perspective(
-		glm::radians(60.0f), // feild of view angle
-		aspectRatio,
-		0.1f, // near-plane
-		10.0f); // far-plane
-	
-	mat4 projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0.0f, 0.0f, -3.0f));
-	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, glm::radians(54.0f), vec3(1.0f, 0.0f, 0.0f));
 
-	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programId, "fullTrasnformMatrix");
-
-	glUniformMatrix4fv(
-		fullTransformMatrixUniformLocation,
-		1,
-		GL_FALSE,
-		&fullTransformMatrix[0][0]);
-
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+	glDrawElementsInstanced(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0, 2 /* shapes */);
 
 	glFlush();
 	SwapBuffers();
@@ -243,6 +288,9 @@ void HelloCanvas::InstallShaders()
 		return;
 	}
 
+	glDeleteShader(vertexShaderId);
+	glDeleteShader(fragmentSharderId);
+
 	glUseProgram(programId);
 }
 
@@ -257,8 +305,8 @@ void HelloCanvas::InitializeGL()
 	wxPuts(wxT("glewInit() = ") + wxString::Format(wxT("%d"), glewInitResult));
 
 	glEnable(GL_DEPTH_TEST);
-	SendDataToOpenGL();
 	InstallShaders();
+	SendDataToOpenGL();
 
 	glInitialized = true;
 }

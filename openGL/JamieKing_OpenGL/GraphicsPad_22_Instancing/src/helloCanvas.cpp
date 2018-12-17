@@ -21,6 +21,10 @@ using std::string;
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/transform.hpp>
+
 using glm::vec3;
 using glm::mat4;
 
@@ -58,6 +62,8 @@ HelloCanvas::HelloCanvas(wxFrame * parent, int * args)
 HelloCanvas::~HelloCanvas()
 {
 	delete m_context;
+	glUseProgram(0);
+	glDeleteProgram(programId);
 }
 
 void HelloCanvas::resized(wxSizeEvent& /* evt */)
@@ -120,17 +126,48 @@ void HelloCanvas::render( wxPaintEvent& /* evt */)
 
 	GLfloat aspectRatio = ((float)GetSize().x) / ((float)GetSize().y);
 	glViewport(0, 0, GetSize().x, GetSize().y);
+
+	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programId, "fullTrasnformMatrix");
 	
+	mat4 fullTransformMatrix;
+
 	mat4 projectionMatrix = glm::perspective(
 		glm::radians(60.0f), // feild of view angle
 		aspectRatio,
 		0.1f, // near-plane
 		10.0f); // far-plane
 	
-	mat4 projectionTranslationMatrix = glm::translate(projectionMatrix, vec3(0.0f, 0.0f, -3.0f));
-	mat4 fullTransformMatrix = glm::rotate(projectionTranslationMatrix, glm::radians(54.0f), vec3(1.0f, 0.0f, 0.0f));
+	/* Cube 1
+	 */
+	mat4 translationMatrix = glm::translate(
+		vec3(-1.0f, 0.0f, -3.0f));
 
-	GLint fullTransformMatrixUniformLocation = glGetUniformLocation(programId, "fullTrasnformMatrix");
+	mat4 rotationMatrix = glm::rotate(
+		glm::radians(36.0f),
+		vec3(1.0f, 0.0f, 0.0f));
+
+	// Less effeicient than combining as we create them. See previous versions.
+	fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
+
+	glUniformMatrix4fv(
+		fullTransformMatrixUniformLocation,
+		1,
+		GL_FALSE,
+		&fullTransformMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+
+	/* Cube 2
+	 */
+	translationMatrix = glm::translate(
+		vec3(1.0f, 0.0f, -3.75f));
+
+	rotationMatrix = glm::rotate(
+		glm::radians(126.0f),
+		vec3(0.0f, 1.0f, 0.0f));
+
+	// Less effeicient than combining as we create them. See previous versions.
+	fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
 
 	glUniformMatrix4fv(
 		fullTransformMatrixUniformLocation,
@@ -242,6 +279,9 @@ void HelloCanvas::InstallShaders()
 	{
 		return;
 	}
+
+	glDeleteShader(vertexShaderId);
+	glDeleteShader(fragmentSharderId);
 
 	glUseProgram(programId);
 }

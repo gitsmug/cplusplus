@@ -58,6 +58,8 @@ HelloCanvas::HelloCanvas(wxFrame * parent, int * args)
 HelloCanvas::~HelloCanvas()
 {
 	delete m_context;
+	glUseProgram(0);
+	glDeleteProgram(programId);
 }
 
 void HelloCanvas::resized(wxSizeEvent& /* evt */)
@@ -242,6 +244,9 @@ void HelloCanvas::InstallShaders()
 	{
 		return;
 	}
+
+	glDeleteShader(vertexShaderId);
+	glDeleteShader(fragmentSharderId);
 
 	glUseProgram(programId);
 }
