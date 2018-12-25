@@ -1,0 +1,53 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		// EasyClangComplete stuff. https://github.com/niosus/EasyClangComplete
+		"ecc_common_flags":
+		[
+			// Reasonable Linux defaults.
+			"-I/usr/include",
+			"-I$project_base_path/src",
+			// this is needed to include the correct headers for clang
+			"-I/usr/lib/clang/$clang_version/include",
+
+
+			// wxWidgets stuff from "wx-config --libs" and "wx-config --cxxflags"
+			"-I/usr/local/include/wx-3.0",
+			"-L/usr/local/lib",
+			"-pthread",
+			"-lwx_gtk2u_xrc-3.0",
+			"-lwx_gtk2u_html-3.0",
+			"-lwx_gtk2u_qa-3.0",
+			"-lwx_gtk2u_adv-3.0",
+			"-lwx_gtk2u_core-3.0",
+			"-lwx_baseu_xml-3.0",
+			"-lwx_baseu_net-3.0",
+			"-lwx_baseu-3.0",
+			"-I/usr/local/lib/wx/include/gtk2-unicode-3.0",
+			"-D_FILE_OFFSET_BITS=64",
+			"-DWXUSINGDLL",
+			"-D__WXGTK__",
+
+			// wxWidgets stuff from "wx-config --gl-libs"
+			"-lwx_gtk2u_gl-3.0",
+
+			// Headers in /usr/include/GL/glew.h
+			"-I/usr/include/GL",
+
+			// Headers in /usr/include/glm
+			"-I/usr/include/glm",
+
+			// Headers in /usr/include/glm/detail
+			"-I/usr/include/glm/detail",
+
+			// Headers in /usr/include/glm
+			"-I/usr/include/glm/gtx",
+		]
+	}
+}
