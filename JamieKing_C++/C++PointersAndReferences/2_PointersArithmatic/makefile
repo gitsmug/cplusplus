@@ -2,7 +2,7 @@
 
 #### PROJECT SETTINGS ####
 # The name of the compiled executable to be created
-BIN_NAME := wxWidgetsOpenGL
+BIN_NAME := c++_tutorial
 # Name of convenience symlink to compiled executable.
 SYMLINK_BIN_NAME := $(BIN_NAME).bin_symlink
 # Directory for resulting executables.
@@ -18,14 +18,6 @@ SRC_DIR = src
 OBJ_DIR = obj
 
 
-# wx-config --libs
-WX_LIBS := $(shell wx-config --libs --gl-libs)
-# wx-config --cxxflags
-WX_CXXFLAGS := $(shell wx-config --cxxflags)
-
-# OpenGL libs
-OPENGL_LIBS := -lGLEW -lglut -lGLU -lGL -I/usr/include/glm
-
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
@@ -37,7 +29,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_DIR)
 # General linker settings
-LINK_FLAGS = $(WX_LIBS) $(OPENGL_LIBS)
+LINK_FLAGS =
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings
