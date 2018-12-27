@@ -12,7 +12,7 @@ int main()
 
 	//int myInt = 9;
 	const int length = 5;
-	int *myIntPtr = new int[length];
+	int* myIntPtr = new int[length];
 
 	cout << "sizeof=" << sizeof(myIntPtr) << endl;
 	cout << myIntPtr << endl;
@@ -40,7 +40,7 @@ int main()
 
 	cout << endl;
 
-	int *ptr = myIntPtr;
+	int* ptr = myIntPtr;
 	cout << *ptr << endl;
 	cout << ptr << endl;
 	ptr += 1;
@@ -48,7 +48,7 @@ int main()
 
 	cout << endl;
 
-	for (int *ptr = myIntPtr; ptr < myIntPtr + length; ptr++)
+	for (int* ptr = myIntPtr; ptr < myIntPtr + length; ptr++)
 	{
 		cout << *ptr << endl;
 	}

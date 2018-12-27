@@ -21,7 +21,7 @@ OBJ_DIR = obj
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g $(WX_CXXFLAGS)
+COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags

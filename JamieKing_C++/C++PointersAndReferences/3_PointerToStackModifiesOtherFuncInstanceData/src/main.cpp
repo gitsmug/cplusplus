@@ -10,7 +10,7 @@ const int valueToPlowOverWith = 667;
 void function2()
 {
 	int f2Int;
-	int *ptr = &f2Int;
+	int* ptr = &f2Int;
 
 	for (int i = 0; i < 20; i++)
 	{
