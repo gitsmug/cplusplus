@@ -16,6 +16,10 @@ SRC_EXT = cpp
 SRC_DIR = src
 # intermediate directory for generated object files, relative to the makefile
 OBJ_DIR = obj
+# object file extension
+OBJ_FILE_EXT = .o
+# dependency file extension
+DEP_FILE_EXT = .d
 
 
 # Space-separated pkg-config libraries used by this project
@@ -112,9 +116,9 @@ endif
 
 # Set the object file names, with the source directory stripped
 # from the path, and the build path prepended in its place
-OBJECTS = $(patsubst %,$(BUILD_PATH)/%.o,$(basename $(SOURCES)))
+OBJECTS = $(patsubst %,$(BUILD_PATH)/%$(OBJ_FILE_EXT),$(basename $(SOURCES)))
 # Set the dependency files that will be used to add header dependencies
-DEPS = $(OBJECTS:.o=.d)
+DEPS = $(OBJECTS:$(OBJ_FILE_EXT)=$(DEP_FILE_EXT))
 
 # Macros for timing compilation
 ifeq ($(UNAME_S),$(OS_X_NAME))
@@ -231,7 +235,7 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 # Source file rules
 # After the first compilation they will be joined with the rules from the
 # dependency files to provide header dependencies
-$(BUILD_PATH)/%.o: %.$(SRC_EXT)
+$(BUILD_PATH)/%$(OBJ_FILE_EXT): %.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@

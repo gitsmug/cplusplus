@@ -120,9 +120,16 @@ public:
 	string lastName;
 	const uint max_age;
 
-	string ToString()
+	string ToString() const
 	{
 		return lastName + ", " + firstName + " max_age: " + to_string(max_age);
+	}
+
+	friend std::ostream& operator<<(std::ostream& stream, const Person& person)
+	{
+		stream << "operator<<: " << person.ToString();
+
+		return stream;
 	}
 };
 
@@ -161,6 +168,8 @@ int main()
 	copidedYou.resparate();
 	copidedYou.makeSound();
 	copidedYou.eat();
+
+	cout << copidedYou << endl;
 
 	return 0;
 }
