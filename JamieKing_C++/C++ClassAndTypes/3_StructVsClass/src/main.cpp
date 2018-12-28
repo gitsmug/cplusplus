@@ -32,7 +32,39 @@ public:
 	}
 };
 
-class Person
+class IEdible
+{
+public:
+	IEdible() {}
+	virtual ~IEdible() {}
+
+	virtual void eat() = 0;
+};
+
+class Mamal : public IEdible
+{
+private:
+	uint mass;
+
+public:
+	Mamal(uint mass)
+		: mass(mass)
+	{ }
+
+	virtual ~Mamal()
+	{
+		cout << "~Mamal()" << endl;
+	}
+
+	virtual void resparate()
+	{
+		cout << "huff, puff..." << endl;
+	}
+
+	virtual void makeSound() = 0;
+};
+
+class Person final : public Mamal
 { 
 private:
 	static int myStaticInt;
@@ -41,22 +73,25 @@ private:
 
 public:
 	Person()
-		: stackHeart(12345),
+		: Mamal(123),
+		stackHeart(12345),
 		firstName("[empty]"),
 		lastName("[empty]"),
 		max_age(100)
 	{
-		cout << "Person()" << endl;
+		cout << typeid(Person).name() << "()" << endl;
 		heapHeart = new Heart();
 	}
 
 	Person(bool /* b */)
-		: heapHeart(nullptr),
+		: Mamal(123),
+		heapHeart(nullptr),
 		max_age(99)
 	{ }
 
 	Person(const Person& toCopy)
-		: stackHeart(toCopy.stackHeart),
+		: Mamal(123),
+		stackHeart(toCopy.stackHeart),
 		firstName(toCopy.firstName),
 		lastName(toCopy.lastName),
 		max_age(toCopy.max_age)
@@ -69,6 +104,16 @@ public:
 		cout << "~Person()" << endl;
 
 		delete heapHeart;
+	}
+
+	void makeSound() override
+	{
+		cout << "derp!" << endl;
+	}
+
+	void eat() override
+	{
+		cout << "NOM, NOM..." << endl;
 	}
 
 	string firstName;
@@ -112,6 +157,10 @@ int main()
 
 	cout << copyMe.ToString() << endl;
 	cout << copidedYou.ToString() << endl;
+
+	copidedYou.resparate();
+	copidedYou.makeSound();
+	copidedYou.eat();
 
 	return 0;
 }
