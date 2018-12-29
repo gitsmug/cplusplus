@@ -2,25 +2,27 @@
 
 #### PROJECT SETTINGS ####
 # The name of the compiled executable to be created
-BIN_NAME := hello
+BIN_NAME := test_hello
 # Name of convenience symlink to compiled executable.
 SYMLINK_BIN_NAME := $(BIN_NAME).bin_symlink
 # Directory for resulting executables.
-BIN_DIR = bin
+BIN_DIR := bin
 # Compiler used
 CXX ?= g++
 #CXX ?= clang
 # Extension of source files used in the project
-SRC_EXT = cpp
+SRC_EXT := cpp
 # Path to the source directory, relative to the makefile
-SRC_DIR = src
+SRC_DIR := test src
 # intermediate directory for generated object files, relative to the makefile
-OBJ_DIR = obj
+OBJ_DIR := obj
 # object file extension
-OBJ_FILE_EXT = .o
+OBJ_FILE_EXT := .o
 # dependency file extension
-DEP_FILE_EXT = .d
+DEP_FILE_EXT := .d
 
+# Enable unit test mode
+PREPROCESSOR := -DUNIT_TEST_MODE=1
 
 ## wx-config --libs
 #WX_LIBS := $(shell wx-config --libs)
@@ -31,14 +33,16 @@ DEP_FILE_EXT = .d
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-#COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g $(WX_CXXFLAGS)
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g
+COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG
+###############################################################
 # Add additional include paths
-INCLUDES = -I $(SRC_DIR)
+#INCLUDES = -I $(SRC_DIR)
+INCLUDES = -I test -I src
+###############################################################
 # General linker settings
 #LINK_FLAGS = $(WX_LIBS)
 LINK_FLAGS =
@@ -118,6 +122,10 @@ else
 						| sort -k 1nr | cut -f2-)
 endif
 
+#SOURCES := ASDF $(SOURCES)
+$(info SOURCES)
+$(info $(SOURCES))
+
 # fallback in case the above fails
 rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
 						$(filter $(subst *,%,$2), $d))
@@ -181,6 +189,8 @@ else
 	@echo "Beginning release build"
 endif
 	@$(START_TIME)
+	#@echo "(TODO: -j parallel command) Calling default make file..."
+	#@$(MAKE) release --no-print-directory
 	@$(MAKE) -f $(THIS_MAKEFILE) all --no-print-directory
 	@echo -n "Total build time: "
 	@$(END_TIME)
@@ -194,6 +204,8 @@ else
 	@echo "Beginning debug build"
 endif
 	@$(START_TIME)
+	#@echo "(TODO: -j parallel command) Calling default make file..."
+	#@$(MAKE) debug --no-print-directory
 	@$(MAKE) -f $(THIS_MAKEFILE) all --no-print-directory
 	@echo -n "Total build time: "
 	@$(END_TIME)
@@ -220,6 +232,8 @@ uninstall:
 # Removes all build files
 .PHONY: clean
 clean:
+	@echo Calling default makefile clean...
+	$(MAKE) clean --no-print-directory
 	@echo "Deleting $(SYMLINK_BIN_NAME) symlink"
 	@$(RM) $(SYMLINK_BIN_NAME)
 	@echo "Deleting output directories"

@@ -130,7 +130,7 @@ public:
 		stream << "operator<<: " << person.ToString();
 
 		return stream;
-	}
+	} 
 };
 
 int Person::myStaticInt = 50;
