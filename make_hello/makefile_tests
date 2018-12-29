@@ -189,8 +189,6 @@ else
 	@echo "Beginning release build"
 endif
 	@$(START_TIME)
-	#@echo "(TODO: -j parallel command) Calling default make file..."
-	#@$(MAKE) release --no-print-directory
 	@$(MAKE) -f $(THIS_MAKEFILE) all --no-print-directory
 	@echo -n "Total build time: "
 	@$(END_TIME)
@@ -204,8 +202,6 @@ else
 	@echo "Beginning debug build"
 endif
 	@$(START_TIME)
-	#@echo "(TODO: -j parallel command) Calling default make file..."
-	#@$(MAKE) debug --no-print-directory
 	@$(MAKE) -f $(THIS_MAKEFILE) all --no-print-directory
 	@echo -n "Total build time: "
 	@$(END_TIME)
@@ -233,7 +229,6 @@ uninstall:
 .PHONY: clean
 clean:
 	@echo Calling default makefile clean...
-	$(MAKE) clean --no-print-directory
 	@echo "Deleting $(SYMLINK_BIN_NAME) symlink"
 	@$(RM) $(SYMLINK_BIN_NAME)
 	@echo "Deleting output directories"
