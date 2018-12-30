@@ -1,1 +1,0 @@
-Explore make, makefile composition, and project structure.

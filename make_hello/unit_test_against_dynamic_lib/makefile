@@ -2,9 +2,9 @@
 
 #### PROJECT SETTINGS ####
 # The name of the compiled executable to be created
-BIN_NAME := test_hello
+BIN_NAME := libhello.so
 # Name of convenience symlink to compiled executable.
-SYMLINK_BIN_NAME := $(BIN_NAME).bin_symlink
+SYMLINK_BIN_NAME := $(BIN_NAME)
 # Directory for resulting executables.
 BIN_DIR := bin
 # Compiler used
@@ -13,7 +13,7 @@ CXX ?= g++
 # Extension of source files used in the project
 SRC_EXT := cpp
 # Path to the source directory, relative to the makefile
-SRC_DIR := test src
+SRC_DIR := src
 # intermediate directory for generated object files, relative to the makefile
 OBJ_DIR := obj
 # object file extension
@@ -21,8 +21,8 @@ OBJ_FILE_EXT := .o
 # dependency file extension
 DEP_FILE_EXT := .d
 
-# Enable unit test mode
-PREPROCESSOR := -DUNIT_TEST_MODE=1
+# preprocessor flags
+PREPROCESSOR :=
 
 ## wx-config --libs
 #WX_LIBS := $(shell wx-config --libs)
@@ -33,19 +33,16 @@ PREPROCESSOR := -DUNIT_TEST_MODE=1
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR)
+COMPILE_FLAGS = -fPIC -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG
-###############################################################
 # Add additional include paths
-#INCLUDES = -I $(SRC_DIR)
-INCLUDES = -I test -I src
-###############################################################
+INCLUDES = -I $(SRC_DIR)
 # General linker settings
 #LINK_FLAGS = $(WX_LIBS)
-LINK_FLAGS =
+LINK_FLAGS = -shared
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings
@@ -121,10 +118,6 @@ else
 	SOURCES = $(shell find $(SRC_DIR) -type f -name '*.$(SRC_EXT)' -printf '%T@\t%p\n' \
 						| sort -k 1nr | cut -f2-)
 endif
-
-#SOURCES := ASDF $(SOURCES)
-$(info SOURCES)
-$(info $(SOURCES))
 
 # fallback in case the above fails
 rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
@@ -228,7 +221,6 @@ uninstall:
 # Removes all build files
 .PHONY: clean
 clean:
-	@echo Calling default makefile clean...
 	@echo "Deleting $(SYMLINK_BIN_NAME) symlink"
 	@$(RM) $(SYMLINK_BIN_NAME)
 	@echo "Deleting output directories"
@@ -243,7 +235,7 @@ all: $(BIN_PATH)/$(BIN_NAME)
 
 # Link the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
-	@echo "Linking: $@"
+	@echo "Linking shared lib: $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 	@echo -en "\t Link time: "
