@@ -1,0 +1,1 @@
+This include dir is where public headers go when making a library. This is not where all headers go.
