@@ -2,7 +2,7 @@
 
 #### PROJECT SETTINGS ####
 # Name of resulting compiled executable
-BIN_NAME := hello
+BIN_NAME := hello1
 # Name of resulting dynamic lib
 LIB_DYN_NAME := lib$(BIN_NAME).so
 # Name of resulting static lib
@@ -28,20 +28,11 @@ OBJ_DIR := obj
 OBJ_FILE_EXT := .o
 # dependency file extension
 DEP_FILE_EXT := .d
-
 # Independent dependency projects' makefile directories.
 # This project has a dependency on a project in directory ./project2
 PROJ_DEP_DIRS := ../project2
-
 # preprocessor flags
 PREPROCESSOR :=
-
-## wx-config --libs
-#WX_LIBS := $(shell wx-config --libs)
-## wx-config --cxxflags
-#WX_CXXFLAGS := $(shell wx-config --cxxflags)
-
-
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
@@ -55,8 +46,8 @@ INCLUDES = -I $(SRC_DIR)
 # General linker settings
 # Static link: -lhello means libhello.a, -L$(CURDIR) means look in current dir (-L means non-standard dir).
 #LINK_FLAGS := -L$(CURDIR)/../project2 -lhello
-# We're bing explicit because -L,-l will .so file even when .a is present
-LINK_FLAGS := $(CURDIR)/../project2/libhello.a
+# We're bing explicit because -L,-l will use .so file even when .a is present
+LINK_FLAGS := $(CURDIR)/../project2/libhello2.a
 # Linker flags for dynamic lib creation.
 LINK_DYN_LIB_FLAGS := -shared
 # Static lib archive creation (ar) flags.
@@ -69,6 +60,8 @@ DLINK_FLAGS =
 DESTDIR = /
 # Install path (bin/ is appended automatically)
 INSTALL_PREFIX = usr/local
+# Parameters used when calling make on subsystems/dependencies from this makefile.
+MAKE_SUBSYSTEM_FLAGS := --warn-undefined-variables -w
 #### END PROJECT SETTINGS ####
 
 # Optionally you may move the section above to a separate config.mk file, and
@@ -111,6 +104,12 @@ ifeq ($(V),true)
 endif
 
 # Combine compiler and linker flags
+ifndef CXXFLAGS
+CXXFLAGS :=
+endif
+ifndef LDFLAGS
+LDFLAGS :=
+endif
 release_make: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(RCOMPILE_FLAGS)
 release_make: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
 debug_make: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(DCOMPILE_FLAGS)
@@ -124,6 +123,8 @@ release: export BIN_PATH := $(BIN_DIR)/release
 debug: export BUILD_PATH := $(BUILD_DIR_DEBUG)
 debug: export BIN_PATH := $(BIN_DIR)/debug
 install: export BIN_PATH := $(BIN_DIR)/release
+
+debug: MAKE_SUBSYSTEM_FLAGS := debug $(MAKE_SUBSYSTEM_FLAGS)
 
 # Find all source files in the source directory, sorted by most
 # recently modified
@@ -188,24 +189,34 @@ ifeq ($(shell git describe > /dev/null 2>&1 ; echo $$?), 0)
 		-D VERSION_HASH=\"$(VERSION_HASH)\"
 endif
 
+# Standard, non-optimized release build
 .PHONY: release
-release: subsystem release_make
+release: subsystem
+# Concurrency (make -j) sync: Dependency make must complete before proceeding.
+# The actual dependency sync requirement is that the dependencies complete before
+# this makefile links; compilation in here and completion of dependency creation
+# could occur in parallel, so there is room for improvement. I haven't taken this
+# on yet because the export variables are messing up the dependency makes.
+# One nice thing about full separation of dependency make from this make is the
+# increased clarity of the output. That is the output mess from the dependency
+# make does not overlap the output from this make.
+release_make: subsystem
+release: release_make
 
 # Debug build for gdb debugging
 .PHONY: debug
-debug: subsystem_debug debug_make
+debug: subsystem
+# Concurrency (make -j) sync: Dependency make must complete before proceeding.
+debug_make: subsystem
+debug: debug_make
 
 # Make independent debug project dependencies.
 .PHONY: subsystem
 subsystem: $(PROJ_DEP_DIRS)
+ifneq ($(PROJ_DEP_DIRS),)
 	@echo "Making dependency in: $<"
-	$(MAKE) -C $<
-
-# Make independent project dependencies.
-.PHONY: subsystem_debug
-subsystem_debug: $(PROJ_DEP_DIRS)
-	@echo "Making dependency in: $<"
-	$(MAKE) debug -C $<
+	$(MAKE) $(MAKE_SUBSYSTEM_FLAGS) -C $<
+endif
 
 # Standard, non-optimized release build
 .PHONY: release_make
@@ -216,7 +227,7 @@ else
 	@echo "Beginning release build: $(BIN_NAME)"
 endif
 	@$(START_TIME)
-	@$(MAKE) all --no-print-directory
+	@$(MAKE) all --no-print-directory --warn-undefined-variables
 	@echo -n "Total build time: "
 	@$(END_TIME)
 
@@ -229,14 +240,14 @@ else
 	@echo "Beginning debug build: $(BIN_NAME)"
 endif
 	@$(START_TIME)
-	@$(MAKE) all --no-print-directory
+	@$(MAKE) all --no-print-directory --warn-undefined-variables
 	@echo -n "Total build time: "
 	@$(END_TIME)
 
 # Create the directories used in the build
 .PHONY: dirs
 dirs:
-	@echo "Creating directories"
+#	@echo "Creating directories"
 	@mkdir -p $(dir $(OBJECTS))
 	@mkdir -p $(BIN_PATH)
 
@@ -255,30 +266,26 @@ uninstall:
 # Removes all build files
 .PHONY: clean
 clean:
-	@echo "Deleting symlinks"
+#	@echo "Deleting symlinks"
 	@$(RM) $(SYMLINK_BIN_NAME)
 	@$(RM) $(SYMLINK_LIB_DYN_NAME)
 	@$(RM) $(SYMLINK_LIB_STATIC_NAME)
-	@echo "Deleting output directories"
+#	@echo "Deleting output directories"
 	@$(RM) -r $(BIN_DIR)
 	@$(RM) -r $(OBJ_DIR)
 
-#subsystem:
-#	@echo "ASDFASDFASDFASDFASDFASDF Making dependency project2"
-#	$(MAKE) -C ../project2
-	
 # Main rule, checks the executable and symlinks to the output
 # It's important that symlinks are created here so that they're recreated
 # when switching between debug and release without triggering any re-compilations.
 .PHONY: all
 all: $(BIN_PATH)/$(BIN_NAME) $(BIN_PATH)/$(LIB_DYN_NAME) $(BIN_PATH)/$(LIB_STATIC_NAME)
-	@echo "Creating symlink: $(BIN_NAME) -> $<"
+#	@echo "Creating symlink: $(BIN_NAME) -> $<"
 	@$(RM) $(SYMLINK_BIN_NAME)
 	@ln -s $(BIN_PATH)/$(BIN_NAME) $(SYMLINK_BIN_NAME)
-	@echo "Creating symlink: $(LIB_DYN_NAME) -> $<"
+#	@echo "Creating symlink: $(LIB_DYN_NAME) -> $<"
 	@$(RM) $(SYMLINK_LIB_DYN_NAME)
 	@ln -s $(BIN_PATH)/$(LIB_DYN_NAME) $(SYMLINK_LIB_DYN_NAME)
-	@echo "Creating symlink: $(LIB_STATIC_NAME) -> $<"
+#	@echo "Creating symlink: $(LIB_STATIC_NAME) -> $<"
 	@$(RM) $(SYMLINK_LIB_STATIC_NAME)
 	@ln -s $(BIN_PATH)/$(LIB_STATIC_NAME) $(SYMLINK_LIB_STATIC_NAME)
 
@@ -302,7 +309,7 @@ $(BIN_PATH)/$(LIB_DYN_NAME): $(OBJECTS)
 $(BIN_PATH)/$(LIB_STATIC_NAME): $(OBJECTS)
 	@echo "Linking static lib: $@"
 	@$(START_TIME)
-	@ar $(ARFLAGS) $@ $(OBJECTS)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	@echo -en "\tLink static lib time: "
 	@$(END_TIME)
 
@@ -316,5 +323,5 @@ $(BUILD_PATH)/%$(OBJ_FILE_EXT): %.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
-	@echo -en "\t Compile time: "
+	@echo -en "\tCompile time $<: "
 	@$(END_TIME)
