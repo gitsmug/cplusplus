@@ -29,7 +29,6 @@ OBJ_FILE_EXT := .o
 # dependency file extension
 DEP_FILE_EXT := .d
 # Independent dependency projects' makefile directories.
-# This project has a dependency on a project in directory ./project2
 PROJ_DEP_DIRS :=
 # preprocessor flags
 PREPROCESSOR :=
@@ -148,17 +147,17 @@ DEPS = $(OBJECTS:$(OBJ_FILE_EXT)=$(DEP_FILE_EXT))
 # Macros for timing compilation
 ifeq ($(UNAME_S),$(OS_X_NAME))
 	CUR_TIME = awk 'BEGIN{srand(); print srand()}'
-	TIME_FILE = $(dir $@).$(notdir $@)_time
-	START_TIME = $(CUR_TIME) > $(TIME_FILE)
-	END_TIME = read st < $(TIME_FILE) ; \
-		$(RM) $(TIME_FILE) ; \
+	TIME_FILE = $(shell mktemp -t $(notdir $@)_time.XXX)
+	START_TIME = $(CUR_TIME) > "$(TIME_FILE)"
+	END_TIME = read st < "$(TIME_FILE)" ; \
+		$(RM) "$(TIME_FILE)" ; \
 		st=$$((`$(CUR_TIME)` - $$st)) ; \
 		echo $$st
 else
-	TIME_FILE = $(dir $@).$(notdir $@)_time
-	START_TIME = date '+%s' > $(TIME_FILE)
-	END_TIME = read st < $(TIME_FILE) ; \
-		$(RM) $(TIME_FILE) ; \
+	TIME_FILE = $(shell mktemp -t $(notdir $@)_time.XXX)
+	START_TIME = date '+%s' > "$(TIME_FILE)"
+	END_TIME = read st < "$(TIME_FILE)" ; \
+		$(RM) "$(TIME_FILE)" ; \
 		st=$$((`date '+%s'` - $$st - 86400)) ; \
 		echo `date -u -d @$$st '+%H:%M:%S'`
 endif

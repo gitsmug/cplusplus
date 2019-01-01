@@ -1,14 +1,19 @@
 #include <iostream>
-#include "../../include/make_hello/stuff/myclass.h"
+#include "../../../project1/include/make_hello/stuff/myclass.h"
 
-class TestMyClass
+using project1::MyClass;
+
+namespace project1_test
 {
-public:
-	void Test1()
+	class TestMyClass
 	{
-		std::cout << "Test1(): Testing MyClass::PrintTest()..." << std::endl;
-	
-		MyClass mc;
-		mc.PrintTest();
-	}
-};
+	public:
+		void Test1()
+		{
+			std::cout << "Test1(): Testing MyClass::PrintTest()..." << std::endl;
+		
+			MyClass mc;
+			mc.PrintTest();
+		}
+	};
+}

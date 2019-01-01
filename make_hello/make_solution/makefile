@@ -1,9 +1,24 @@
-# Project directories that contain makefiles.
-PROJ_DIRS := project1 project2 project3
 
-# Call make clean in specified project directories.
-.PHONY: clean $(PROJ_DIRS)
-clean: $(PROJ_DIRS)
+RELEASE_MODE :=
 
-$(PROJ_DIRS):
-	$(MAKE) clean -C $@
+.PHONY: release
+release: RELEASE_MODE :=
+release: all
+
+.PHONY: debug
+debug: RELEASE_MODE := debug
+debug: all
+
+.PHONY: all
+all:
+	@$(MAKE) $(RELEASE_MODE) -C project1
+	@$(MAKE) $(RELEASE_MODE) -C project1_test
+	@$(MAKE) $(RELEASE_MODE) -C project2
+	@$(MAKE) $(RELEASE_MODE) -C project3
+
+.PHONY: clean
+clean:
+	@$(MAKE) clean -C project1
+	@$(MAKE) clean -C project1_test
+	@$(MAKE) clean -C project2
+	@$(MAKE) clean -C project3

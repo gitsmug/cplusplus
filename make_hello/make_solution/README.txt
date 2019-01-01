@@ -1,9 +1,7 @@
 Explore make, makefile composition, and project structure.
 
-TODO:
-	Build time totals do not include inner dependency builds.
-	Consider merging static libraries so that depedency chains don't need
-	knowledge of >= n + 1 depth static library dependencies.
+I've attempted to make an analogy to a Visual Studio C# solution, which would be an
+analogy to a Unix toolchain anyway.
 
 gcc-based library creation:
 https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/create-libraries/index
