@@ -30,7 +30,7 @@ OBJ_FILE_EXT := .o
 DEP_FILE_EXT := .d
 # Independent dependency projects' makefile directories.
 # This project has a dependency on a project in directory ./project2
-PROJ_DEP_DIRS :=
+PROJ_DEP_DIRS := $(CURDIR)/../project3
 # preprocessor flags
 PREPROCESSOR :=
 # Space-separated pkg-config libraries used by this project
@@ -44,7 +44,10 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_DIR)
 # General linker settings
-LINK_FLAGS :=
+# Static link: -lhello means libhello.a, -L$(CURDIR) means look in current dir (-L means non-standard dir).
+#LINK_FLAGS := -L$(CURDIR)/../project3 -lhello
+# We're bing explicit because -L,-l will use .so file even when .a is present
+LINK_FLAGS := $(CURDIR)/../project3/libhello3.a
 # Linker flags for dynamic lib creation.
 LINK_DYN_LIB_FLAGS := -shared
 # Static lib archive creation (ar) flags.
@@ -208,11 +211,13 @@ debug_make: subsystem
 debug: debug_make
 
 # Make independent debug project dependencies.
-.PHONY: subsystem
+.PHONY: subsystem $(PROJ_DEP_DIRS)
 subsystem: $(PROJ_DEP_DIRS)
+
+$(PROJ_DEP_DIRS):
 ifneq ($(PROJ_DEP_DIRS),)
-	@echo "Making dependency in: $<"
-	$(MAKE) $(MAKE_SUBSYSTEM_FLAGS) -C $<
+	@echo "Making dependency in: $@"
+	$(MAKE) $(MAKE_SUBSYSTEM_FLAGS) -C $@
 endif
 
 # Standard, non-optimized release build

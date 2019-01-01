@@ -1,5 +1,5 @@
 # Project directories that contain makefiles.
-PROJ_DIRS := project1 project2
+PROJ_DIRS := project1 project2 project3
 
 # Call make clean in specified project directories.
 .PHONY: clean $(PROJ_DIRS)

@@ -4,6 +4,9 @@
 
 #include "stuff/project2Class.h"
 
+#include "../../project3/src/stuff/project3Class.h"
+#include "../../project3/include/make_hello/stuff/myclass.h"
+
 using namespace project2;
 
 int main()
@@ -18,6 +21,9 @@ int main()
 
 	Project2Class pc;
 	pc.PrintTest();
+
+	project3::Project3Class p3c;
+	p3c.PrintTest();
 
 	return 0;
 }

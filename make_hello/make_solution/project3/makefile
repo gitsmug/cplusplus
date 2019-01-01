@@ -2,7 +2,7 @@
 
 #### PROJECT SETTINGS ####
 # Name of resulting compiled executable
-BIN_NAME := hello1
+BIN_NAME := hello3
 # Name of resulting dynamic lib
 LIB_DYN_NAME := lib$(BIN_NAME).so
 # Name of resulting static lib
@@ -30,7 +30,7 @@ OBJ_FILE_EXT := .o
 DEP_FILE_EXT := .d
 # Independent dependency projects' makefile directories.
 # This project has a dependency on a project in directory ./project2
-PROJ_DEP_DIRS := $(CURDIR)/../project2 $(CURDIR)/../project3
+PROJ_DEP_DIRS :=
 # preprocessor flags
 PREPROCESSOR :=
 # Space-separated pkg-config libraries used by this project
@@ -44,10 +44,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_DIR)
 # General linker settings
-# Static link: -lhello means libhello.a, -L$(CURDIR) means look in current dir (-L means non-standard dir).
-#LINK_FLAGS := -L$(CURDIR)/../project2 -lhello
-# We're bing explicit because -L,-l will use .so file even when .a is present
-LINK_FLAGS := $(CURDIR)/../project2/libhello2.a $(CURDIR)/../project3/libhello3.a
+LINK_FLAGS :=
 # Linker flags for dynamic lib creation.
 LINK_DYN_LIB_FLAGS := -shared
 # Static lib archive creation (ar) flags.
