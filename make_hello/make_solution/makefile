@@ -2,7 +2,7 @@
 RELEASE_MODE :=
 
 .PHONY: release
-release: RELEASE_MODE :=
+release: RELEASE_MODE := release
 release: all
 
 .PHONY: debug

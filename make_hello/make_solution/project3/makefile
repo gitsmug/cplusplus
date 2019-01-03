@@ -111,16 +111,21 @@ release_make: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
 debug_make: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(DCOMPILE_FLAGS)
 debug_make: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(DLINK_FLAGS)
 
-# Build and output paths
-BUILD_DIR_RELEASE := $(OBJ_DIR)/release
-BUILD_DIR_DEBUG := $(OBJ_DIR)/debug
-release: export BUILD_PATH := $(BUILD_DIR_RELEASE)
-release: export BIN_PATH := $(BIN_DIR)/release
-debug: export BUILD_PATH := $(BUILD_DIR_DEBUG)
-debug: export BIN_PATH := $(BIN_DIR)/debug
-install: export BIN_PATH := $(BIN_DIR)/release
+# Build/compile/release mode: debug/release
+ifndef BUILD_MODE
+BUILD_MODE :=
+endif
+release: BUILD_MODE := release
+debug: BUILD_MODE := debug
 
-debug: MAKE_SUBSYSTEM_FLAGS := debug $(MAKE_SUBSYSTEM_FLAGS)
+# Build and output paths
+release: export BUILD_PATH := $(OBJ_DIR)/$(BUILD_MODE)
+release: export BIN_PATH := $(BIN_DIR)/$(BUILD_MODE)
+debug: export BUILD_PATH := $(OBJ_DIR)/$(BUILD_MODE)
+debug: export BIN_PATH := $(BIN_DIR)/$(BUILD_MODE)
+install: export BIN_PATH := $(BIN_DIR)/$(BUILD_MODE)
+
+debug: MAKE_SUBSYSTEM_FLAGS := $(BUILD_MODE) $(MAKE_SUBSYSTEM_FLAGS)
 
 # Find all source files in the source directory, sorted by most
 # recently modified
@@ -147,14 +152,14 @@ DEPS = $(OBJECTS:$(OBJ_FILE_EXT)=$(DEP_FILE_EXT))
 # Macros for timing compilation
 ifeq ($(UNAME_S),$(OS_X_NAME))
 	CUR_TIME = awk 'BEGIN{srand(); print srand()}'
-	TIME_FILE = $(shell mktemp -t $(notdir $@)_time.XXX)
+	TIME_FILE := $(dir $@).$$PPID.$(notdir $@)_time
 	START_TIME = $(CUR_TIME) > "$(TIME_FILE)"
 	END_TIME = read st < "$(TIME_FILE)" ; \
 		$(RM) "$(TIME_FILE)" ; \
 		st=$$((`$(CUR_TIME)` - $$st)) ; \
 		echo $$st
 else
-	TIME_FILE = $(shell mktemp -t $(notdir $@)_time.XXX)
+	TIME_FILE = $(dir $@).$$PPID.$(notdir $@)_time
 	START_TIME = date '+%s' > "$(TIME_FILE)"
 	END_TIME = read st < "$(TIME_FILE)" ; \
 		$(RM) "$(TIME_FILE)" ; \
@@ -220,27 +225,25 @@ endif
 .PHONY: release_make
 release_make: dirs
 ifeq ($(USE_VERSION), true)
-	@echo "Beginning release build: $(BIN_NAME) v$(VERSION_STRING)"
+	@echo "Beginning $(BUILD_MODE) build: $(BIN_NAME) v$(VERSION_STRING)"
 else
-	@echo "Beginning release build: $(BIN_NAME)"
+	@echo "Beginning $(BUILD_MODE) build: $(BIN_NAME)"
 endif
 	@$(START_TIME)
 	@$(MAKE) all --no-print-directory --warn-undefined-variables
-	@echo -n "Total build time: "
-	@$(END_TIME)
+	@printf "Total time $(BUILD_MODE) build $(BIN_NAME): $$($(END_TIME))\n"
 
 # Debug build for gdb debugging
 .PHONY: debug_make
 debug_make: dirs
 ifeq ($(USE_VERSION), true)
-	@echo "Beginning debug build: $(BIN_NAME) v$(VERSION_STRING)"
+	@echo "Beginning $(BUILD_MODE) build: $(BIN_NAME) v$(VERSION_STRING)"
 else
-	@echo "Beginning debug build: $(BIN_NAME)"
+	@echo "Beginning $(BUILD_MODE) build: $(BIN_NAME)"
 endif
 	@$(START_TIME)
 	@$(MAKE) all --no-print-directory --warn-undefined-variables
-	@echo -n "Total build time: "
-	@$(END_TIME)
+	@printf "Total time $(BUILD_MODE) build $(BIN_NAME): $$($(END_TIME))\n"
 
 # Create the directories used in the build
 .PHONY: dirs
@@ -292,24 +295,21 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 	@echo "Linking exe: $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
-	@echo -en "\tLink exe time: "
-	@$(END_TIME)
+	@printf "\tLink exe time $(notdir $@): $$($(END_TIME))\n"
 
 # Link dynamic lib
 $(BIN_PATH)/$(LIB_DYN_NAME): $(OBJECTS)
 	@echo "Linking dynamic lib: $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(OBJECTS) $(LINK_DYN_LIB_FLAGS) $(LDFLAGS) -o $@
-	@echo -en "\tLink dynamic lib time: "
-	@$(END_TIME)
+	@printf "\tLink dynamic lib time $(notdir $@): $$($(END_TIME))\n"
 
 # Link static lib
 $(BIN_PATH)/$(LIB_STATIC_NAME): $(OBJECTS)
 	@echo "Linking static lib: $@"
 	@$(START_TIME)
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
-	@echo -en "\tLink static lib time: "
-	@$(END_TIME)
+	@printf "\tLink static lib time $(notdir $@): $$($(END_TIME))\n"
 
 # Add dependency files, if they exist
 -include $(DEPS)
@@ -321,5 +321,4 @@ $(BUILD_PATH)/%$(OBJ_FILE_EXT): %.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
-	@echo -en "\tCompile time $<: "
-	@$(END_TIME)
+	@printf "\tCompile time $(notdir $<): $$($(END_TIME))\n"
