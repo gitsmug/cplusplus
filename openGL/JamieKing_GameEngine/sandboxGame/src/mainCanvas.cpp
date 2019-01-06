@@ -1,6 +1,7 @@
 #include <fstream>
 #include <string>
 using std::string;
+#include <cassert>
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -37,6 +38,9 @@ namespace sandboxGame
 
 		// To avoid flashing on MSW
 		SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+
+		Connect(wxEVT_SIZE, wxSizeEventHandler(MainCanvas::Resized));
+		Connect(wxEVT_PAINT, wxPaintEventHandler(MainCanvas::Render));
 	}
 
 	MainCanvas::~MainCanvas()
@@ -45,29 +49,33 @@ namespace sandboxGame
 		m_context = nullptr;
 	}
 
-	void MainCanvas::resized(wxSizeEvent& /* evt */)
+	void MainCanvas::Resized(wxSizeEvent& /* evt */)
 	{
 		Refresh();
 	}
 
 	void MainCanvas::PaintGL()
 	{
+		InitializeGL();
+		
 		// GL_COLOR_BUFFER_BIT is wasteful if entire view is painted over (video game scenes, etc.)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glViewport(0, 0, GetSize().x, GetSize().y);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glFlush();
 		SwapBuffers();
 	}
 
-	void MainCanvas::render( wxPaintEvent& /* evt */)
+	void MainCanvas::Render(wxPaintEvent& /* evt */)
 	{
 		if (!IsShown()) { return; }
 
-		InitializeGL();
-
+		//InitializeGL();
 		wxPaintDC(this); // only to be used in paint events. use wxClientDC to paint outside the paint event
-
 		PaintGL();
 	}
 
@@ -84,6 +92,20 @@ namespace sandboxGame
 		{
 			wxPuts(wxT("glewInit() = ") + wxString::Format(wxT("%d"), glewInitResult));
 		}
+
+		assert(GLEW_OK == glewInitResult);
+
+		GLfloat verts[] =
+		{
+			0.0f, 0.1f,
+			-0.1f, -0.1f,
+			0.1f, -0.1f
+		};
+
+		glGenBuffers(1, &vertexBufferId);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
 
 		glInitialized = true;
 	}

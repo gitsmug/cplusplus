@@ -20,8 +20,8 @@ namespace sandboxGame
 		MainCanvas(wxFrame * parent, int* args);
 		virtual ~MainCanvas();
 
-		void resized(wxSizeEvent& evt);
-		void render(wxPaintEvent& evt);
+		void Resized(wxSizeEvent& evt);
+		void Render(wxPaintEvent& evt);
 		void PaintGL();
 		void MouseMoveEvent(wxMouseEvent& event);
 		void KeyPressEvent(wxKeyEvent& event);
@@ -29,6 +29,7 @@ namespace sandboxGame
 	private:
 		wxGLContext * m_context;
 		bool glInitialized;
+		GLuint vertexBufferId;
 
 		void SendDataToOpenGL();
 		void InitializeGL();

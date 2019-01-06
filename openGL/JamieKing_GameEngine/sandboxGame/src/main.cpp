@@ -32,7 +32,7 @@ bool MainApp::OnInit()
 	wxPuts(wxT(""));
 
 	sandboxGame::MainFrame *h = new MainFrame(
-		"Jamie King's Game Engine Tutorial",
+		"SandboxGame: Jamie King's Game Engine Tutorial",
 		wxSize(600, 400));
 	h->Show(true);
 
