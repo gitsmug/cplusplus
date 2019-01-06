@@ -2,7 +2,7 @@
 
 #### PROJECT SETTINGS ####
 # Name of resulting compiled executable
-BIN_NAME := engine
+BIN_NAME := sandboxGame
 # Name of resulting dynamic lib
 LIB_DYN_NAME := lib$(BIN_NAME).so
 # Name of resulting static lib
@@ -30,13 +30,19 @@ OBJ_FILE_EXT := .o
 DEP_FILE_EXT := .d
 # Independent dependency projects' makefile directories.
 # This project has a direct build dependency on a project in directory ./project2
-PROJ_DEP_DIRS :=
+PROJ_DEP_DIRS := $(CURDIR)/../engine
 # preprocessor flags
 PREPROCESSOR :=
 # Space-separated pkg-config libraries used by this project
 LIBS =
+
+# wx-config --libs
+WX_LIBS := $(shell wx-config --libs --gl-libs)
+# wx-config --cxxflags
+WX_CXXFLAGS := $(shell wx-config --cxxflags)
+
 # General compiler flags
-COMPILE_FLAGS = -fPIC -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR)
+COMPILE_FLAGS = -fPIC -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR) $(WX_CXXFLAGS)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
@@ -46,8 +52,7 @@ INCLUDES = -I $(SRC_DIR)
 # General linker settings
 # Static link: -lhello means libhello.a, -L$(CURDIR) means look in current dir (-L means non-standard dir).
 #LINK_FLAGS := -L$(CURDIR)/../project2 -lhello
-# We're bing explicit because -L,-l will use .so file even when .a is present
-LINK_FLAGS :=
+LINK_FLAGS := $(WX_LIBS) $(CURDIR)/../engine/libengine.a
 # Linker flags for dynamic lib creation.
 LINK_DYN_LIB_FLAGS := -shared
 # Static lib archive creation (ar) flags.

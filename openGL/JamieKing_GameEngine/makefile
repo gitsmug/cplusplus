@@ -11,14 +11,14 @@ debug: all
 
 .PHONY: all
 all:
-#	@$(MAKE) $(RELEASE_MODE) -C project1
-#	@$(MAKE) $(RELEASE_MODE) -C project1_test
+	@$(MAKE) $(RELEASE_MODE) -C engine
+	@$(MAKE) $(RELEASE_MODE) -C sandboxGame
 #	@$(MAKE) $(RELEASE_MODE) -C project2
 #	@$(MAKE) $(RELEASE_MODE) -C project3
 
 .PHONY: clean
 clean:
-#	@$(MAKE) clean -C project1
-#	@$(MAKE) clean -C project1_test
+	@$(MAKE) clean -C engine
+	@$(MAKE) clean -C sandboxGame
 #	@$(MAKE) clean -C project2
 #	@$(MAKE) clean -C project3
