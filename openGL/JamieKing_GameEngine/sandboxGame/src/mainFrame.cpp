@@ -8,8 +8,8 @@
 
 namespace sandboxGame
 {
-	MainFrame::MainFrame(const wxString &title)
-		:wxFrame((wxFrame *)NULL, wxID_ANY, title, wxDefaultPosition, wxSize(600, 400))
+	MainFrame::MainFrame(const wxString &title, const wxSize& frameSize)
+		:wxFrame((wxFrame *)NULL, wxID_ANY, title, wxDefaultPosition, frameSize)
 	{
 		menubar = new wxMenuBar();
 		file = new wxMenu();

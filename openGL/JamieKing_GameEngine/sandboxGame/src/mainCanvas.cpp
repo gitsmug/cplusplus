@@ -9,15 +9,15 @@ using std::string;
 #endif
 
 // include OpenGL
-//#ifdef __WXMAC__
-//#include <OpenGL/glew.h>
-//#include "OpenGL/glu.h"
-//#include "OpenGL/gl.h"
-//#else
-//#include <GL/glew.h>
-//#include <GL/glu.h>
-//#include <GL/gl.h>
-//#endif
+#ifdef __WXMAC__
+#include <OpenGL/glew.h>
+#include "OpenGL/glu.h"
+#include "OpenGL/gl.h"
+#else
+#include <GL/glew.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#endif
 
 #include "mainCanvas.h"
 
@@ -53,10 +53,10 @@ namespace sandboxGame
 	void MainCanvas::PaintGL()
 	{
 		// GL_COLOR_BUFFER_BIT is wasteful if entire view is painted over (video game scenes, etc.)
-	//	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	//	glViewport(0, 0, GetSize().x, GetSize().y);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		glViewport(0, 0, GetSize().x, GetSize().y);
 
-	//	glFlush();
+		glFlush();
 		SwapBuffers();
 	}
 
@@ -76,14 +76,14 @@ namespace sandboxGame
 		if (glInitialized) { return; }
 
 		wxGLCanvas::SetCurrent(*m_context);
-	//	glLoadIdentity();
+		glLoadIdentity();
 
-	//	const GLenum glewInitResult = glewInit();
+		const GLenum glewInitResult = glewInit();
 
-	//	if (GLEW_OK != glewInitResult)
-	//	{
-	//		wxPuts(wxT("glewInit() = ") + wxString::Format(wxT("%d"), glewInitResult));
-	//	}
+		if (GLEW_OK != glewInitResult)
+		{
+			wxPuts(wxT("glewInit() = ") + wxString::Format(wxT("%d"), glewInitResult));
+		}
 
 		glInitialized = true;
 	}

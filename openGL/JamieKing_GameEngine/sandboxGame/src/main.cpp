@@ -31,7 +31,9 @@ bool MainApp::OnInit()
 	wxPuts(wxT("https://www.youtube.com/user/1kingja"));
 	wxPuts(wxT(""));
 
-	sandboxGame::MainFrame *h = new MainFrame("Jamie King's Game Engine Tutorial");
+	sandboxGame::MainFrame *h = new MainFrame(
+		"Jamie King's Game Engine Tutorial",
+		wxSize(600, 400));
 	h->Show(true);
 
 	return true;

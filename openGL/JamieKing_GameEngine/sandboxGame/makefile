@@ -8,7 +8,7 @@ LIB_DYN_NAME := lib$(BIN_NAME).so
 # Name of resulting static lib
 LIB_STATIC_NAME := lib$(BIN_NAME).a
 # Name of convenience symlink to compiled executable.
-SYMLINK_BIN_NAME := $(BIN_NAME)
+SYMLINK_BIN_NAME := $(BIN_NAME).bin
 # Name of convenience symlink to compiled dynamic lib.
 SYMLINK_LIB_DYN_NAME := $(LIB_DYN_NAME)
 # Name of convenience symlink to compiled static lib.
@@ -41,6 +41,9 @@ WX_LIBS := $(shell wx-config --libs --gl-libs)
 # wx-config --cxxflags
 WX_CXXFLAGS := $(shell wx-config --cxxflags)
 
+# OpenGL libs
+OPENGL_LIBS := -lGLEW -lglut -lGLU -lGL -I/usr/include/glm
+
 # General compiler flags
 COMPILE_FLAGS = -fPIC -std=c++11 -Wall -Wextra -pedantic -g $(PREPROCESSOR) $(WX_CXXFLAGS)
 # Additional release-specific flags
@@ -52,7 +55,7 @@ INCLUDES = -I $(SRC_DIR)
 # General linker settings
 # Static link: -lhello means libhello.a, -L$(CURDIR) means look in current dir (-L means non-standard dir).
 #LINK_FLAGS := -L$(CURDIR)/../project2 -lhello
-LINK_FLAGS := $(WX_LIBS) $(CURDIR)/../engine/libengine.a
+LINK_FLAGS := $(WX_LIBS) $(OPENGL_LIBS) $(CURDIR)/../engine/libengine.a
 # Linker flags for dynamic lib creation.
 LINK_DYN_LIB_FLAGS := -shared
 # Static lib archive creation (ar) flags.

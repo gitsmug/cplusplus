@@ -14,7 +14,7 @@ namespace sandboxGame
 	class MainFrame : public wxFrame
 	{
 	public:
-		MainFrame(const wxString& title);
+		MainFrame(const wxString& title, const wxSize& frameSize);
 
 		void OnQuit(wxCommandEvent & event);
 

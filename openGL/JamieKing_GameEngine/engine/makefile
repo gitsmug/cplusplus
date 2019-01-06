@@ -8,7 +8,7 @@ LIB_DYN_NAME := lib$(BIN_NAME).so
 # Name of resulting static lib
 LIB_STATIC_NAME := lib$(BIN_NAME).a
 # Name of convenience symlink to compiled executable.
-SYMLINK_BIN_NAME := $(BIN_NAME)
+SYMLINK_BIN_NAME := $(BIN_NAME).bin
 # Name of convenience symlink to compiled dynamic lib.
 SYMLINK_LIB_DYN_NAME := $(LIB_DYN_NAME)
 # Name of convenience symlink to compiled static lib.
